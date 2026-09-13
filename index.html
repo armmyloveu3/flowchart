@@ -1,0 +1,2278 @@
+```html
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0,
+               maximum-scale=1.0, user-scalable=no">
+
+<title>Flowchart Playground ป.3</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet">
+
+<style>
+:root {
+  --primary:#4338ca;
+  --primary-light:#6366f1;
+  --primary-bg:#eef2ff;
+
+  --bg:#f1f5f9;
+  --card:#ffffff;
+  --text:#1e293b;
+  --muted:#64748b;
+  --border:#cbd5e1;
+
+  --terminal-bg:#d1fae5;
+  --terminal-border:#10b981;
+
+  --process-bg:#e0f2fe;
+  --process-border:#0284c7;
+
+  --decision-bg:#fef9c3;
+  --decision-border:#ca8a04;
+
+  --success:#15803d;
+  --success-bg:#dcfce7;
+
+  --danger:#b91c1c;
+  --danger-bg:#fee2e2;
+
+  --warning:#b45309;
+  --warning-bg:#fef3c7;
+}
+
+* {
+  box-sizing:border-box;
+  font-family:'Prompt',sans-serif;
+  margin:0;
+  padding:0;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,
+body {
+  width:100%;
+  height:100%;
+}
+
+body {
+  background:var(--bg);
+  color:var(--text);
+  overflow:hidden;
+  touch-action:manipulation;
+}
+
+/* ================= HEADER ================= */
+
+header {
+  height:72px;
+  background:white;
+  border-bottom:2px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 20px;
+  box-shadow:0 2px 6px rgba(0,0,0,.05);
+  position:relative;
+  z-index:20;
+}
+
+.logo-area {
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.logo-icon {
+  font-size:32px;
+}
+
+.logo-area h1 {
+  color:var(--primary);
+  font-size:1.25rem;
+  line-height:1.1;
+}
+
+.badge-grade {
+  display:inline-block;
+  margin-top:3px;
+  background:#e0e7ff;
+  color:var(--primary);
+  padding:2px 10px;
+  border-radius:999px;
+  font-size:.78rem;
+  font-weight:600;
+}
+
+.header-actions {
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.task-dropdown {
+  min-height:42px;
+  padding:7px 12px;
+  border:1.5px solid var(--primary-light);
+  border-radius:9px;
+  background:white;
+  color:var(--text);
+  font-weight:500;
+  font-size:.88rem;
+  outline:none;
+}
+
+.btn {
+  min-height:42px;
+  border-radius:9px;
+  padding:8px 15px;
+  border:none;
+  font-size:.9rem;
+  font-weight:600;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  transition:.2s;
+  touch-action:manipulation;
+}
+
+.btn-primary {
+  background:var(--primary);
+  color:white;
+}
+
+.btn-primary:active {
+  transform:scale(.97);
+}
+
+.btn-outline {
+  background:white;
+  border:1.5px solid var(--border);
+  color:var(--text);
+}
+
+/* ================= SCORE ================= */
+
+.score-bar {
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.score-item {
+  background:#f8fafc;
+  border:1px solid var(--border);
+  padding:5px 12px;
+  border-radius:999px;
+  font-size:.82rem;
+  font-weight:600;
+}
+
+/* ================= MAIN ================= */
+
+.app-workspace {
+  height:calc(100vh - 72px);
+  display:grid;
+  grid-template-columns:310px minmax(400px,1fr) 285px;
+  overflow:hidden;
+}
+
+/* ================= LEFT ================= */
+
+.panel-left {
+  background:white;
+  border-right:1px solid var(--border);
+  padding:16px;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+.card-info {
+  background:#f8fafc;
+  border-left:4px solid var(--primary);
+  padding:12px;
+  border-radius:7px;
+  margin-bottom:14px;
+}
+
+.card-info h3 {
+  font-size:.95rem;
+  color:var(--primary);
+  margin-bottom:5px;
+}
+
+.card-info p {
+  color:var(--muted);
+  font-size:.83rem;
+  line-height:1.45;
+}
+
+.section-title {
+  font-size:.86rem;
+  font-weight:600;
+  color:#475569;
+  margin-bottom:9px;
+}
+
+.block-list {
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+}
+
+.flow-block-source {
+  min-height:58px;
+  padding:9px 11px;
+  border:2px solid var(--border);
+  border-radius:9px;
+  background:white;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  font-size:.84rem;
+  font-weight:500;
+  cursor:pointer;
+
+  user-select:none;
+  -webkit-user-select:none;
+
+  transition:.2s;
+}
+
+.flow-block-source:active {
+  transform:scale(.98);
+}
+
+.flow-block-source.used {
+  opacity:.35;
+  filter:grayscale(1);
+}
+
+.flow-block-source.selected {
+  border-color:var(--primary);
+  background:var(--primary-bg);
+  box-shadow:0 0 0 3px rgba(99,102,241,.12);
+}
+
+/* ================= SHAPES ================= */
+
+.shape-tag {
+  width:34px;
+  height:24px;
+  border:2px solid #334155;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+}
+
+.shape-terminal {
+  border-radius:14px;
+  background:var(--terminal-bg);
+  border-color:var(--terminal-border);
+}
+
+.shape-process {
+  border-radius:3px;
+  background:var(--process-bg);
+  border-color:var(--process-border);
+}
+
+.shape-decision {
+  transform:rotate(45deg) scale(.68);
+  background:var(--decision-bg);
+  border-color:var(--decision-border);
+}
+
+/* ================= CENTER ================= */
+
+.panel-center {
+  background:#f8fafc;
+  overflow-y:auto;
+  padding:22px 18px 40px;
+  -webkit-overflow-scrolling:touch;
+}
+
+.center-header {
+  max-width:560px;
+  margin:0 auto 14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.center-title {
+  font-weight:700;
+  color:#334155;
+}
+
+.progress-text {
+  font-size:.82rem;
+  color:var(--muted);
+}
+
+.chart-flow-container {
+  width:100%;
+  max-width:560px;
+  margin:auto;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.drop-slot {
+  width:100%;
+  min-height:68px;
+  border:2px dashed #94a3b8;
+  background:white;
+  border-radius:11px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  transition:.2s;
+}
+
+.drop-slot.drag-over {
+  border-color:var(--primary);
+  background:var(--primary-bg);
+  transform:scale(1.015);
+}
+
+.drop-slot.highlight {
+  border-color:var(--primary);
+  background:#eef2ff;
+  box-shadow:0 0 0 4px rgba(99,102,241,.08);
+}
+
+.empty-placeholder {
+  color:#94a3b8;
+  font-size:.83rem;
+  text-align:center;
+  padding:8px;
+}
+
+.placed-block {
+  width:100%;
+  min-height:64px;
+  padding:9px 12px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+
+  border:2px solid;
+  border-radius:9px;
+
+  animation:popIn .2s ease;
+}
+
+.placed-block.type-terminal {
+  background:var(--terminal-bg);
+  border-color:var(--terminal-border);
+}
+
+.placed-block.type-process {
+  background:var(--process-bg);
+  border-color:var(--process-border);
+}
+
+.placed-block.type-decision {
+  background:var(--decision-bg);
+  border-color:var(--decision-border);
+}
+
+.block-text {
+  display:flex;
+  align-items:center;
+  gap:9px;
+  font-size:.85rem;
+  font-weight:500;
+}
+
+.btn-remove-slot {
+  width:32px;
+  height:32px;
+  border:none;
+  border-radius:7px;
+  background:rgba(0,0,0,.05);
+  color:#64748b;
+  cursor:pointer;
+  flex-shrink:0;
+  font-size:16px;
+}
+
+.btn-remove-slot:active {
+  background:rgba(185,28,28,.12);
+  color:var(--danger);
+}
+
+.flow-connector-line {
+  width:3px;
+  height:25px;
+  background:#64748b;
+  position:relative;
+  margin:3px 0;
+}
+
+.flow-connector-line::after {
+  content:"";
+  position:absolute;
+  bottom:-1px;
+  left:-4px;
+
+  border-left:5px solid transparent;
+  border-right:5px solid transparent;
+  border-top:8px solid #64748b;
+}
+
+/* ================= RIGHT ================= */
+
+.panel-right {
+  background:white;
+  border-left:1px solid var(--border);
+  padding:16px;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+.guide-card {
+  background:#faf5ff;
+  border:1px solid #e9d5ff;
+  border-radius:9px;
+  padding:13px;
+  margin-bottom:14px;
+}
+
+.guide-card h4 {
+  color:#6b21a8;
+  font-size:.92rem;
+  margin-bottom:12px;
+}
+
+.guide-item {
+  display:flex;
+  gap:9px;
+  align-items:flex-start;
+  margin-bottom:11px;
+  font-size:.78rem;
+  line-height:1.4;
+}
+
+.guide-item:last-child {
+  margin-bottom:0;
+}
+
+.action-card {
+  background:#f8fafc;
+  border:1px solid var(--border);
+  border-radius:9px;
+  padding:12px;
+}
+
+.action-card .btn {
+  width:100%;
+  margin-bottom:9px;
+}
+
+.action-card .btn:last-child {
+  margin-bottom:0;
+}
+
+/* ================= FEEDBACK ================= */
+
+.status-box {
+  display:none;
+  margin-top:12px;
+  padding:13px;
+  border-radius:9px;
+  font-size:.83rem;
+  line-height:1.5;
+}
+
+.status-success {
+  background:var(--success-bg);
+  color:var(--success);
+  border:1.5px solid #86efac;
+}
+
+.status-error {
+  background:var(--danger-bg);
+  color:var(--danger);
+  border:1.5px solid #fca5a5;
+}
+
+.status-warning {
+  background:var(--warning-bg);
+  color:var(--warning);
+  border:1.5px solid #fcd34d;
+}
+
+/* ================= MODAL ================= */
+
+.modal-overlay {
+  position:fixed;
+  inset:0;
+  background:rgba(15,23,42,.55);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:100;
+  padding:20px;
+}
+
+.modal {
+  background:white;
+  width:min(440px,100%);
+  border-radius:18px;
+  padding:25px;
+  text-align:center;
+  box-shadow:0 20px 60px rgba(0,0,0,.25);
+  animation:popIn .25s ease;
+}
+
+.modal-icon {
+  font-size:58px;
+  margin-bottom:8px;
+}
+
+.modal h2 {
+  color:var(--primary);
+  margin-bottom:8px;
+}
+
+.modal p {
+  color:var(--muted);
+  font-size:.9rem;
+  line-height:1.5;
+  margin-bottom:16px;
+}
+
+.final-score {
+  font-size:2rem;
+  font-weight:700;
+  color:var(--primary);
+  margin:10px 0 18px;
+}
+
+/* ================= ANIMATION ================= */
+
+@keyframes popIn {
+  from {
+    opacity:0;
+    transform:scale(.92);
+  }
+  to {
+    opacity:1;
+    transform:scale(1);
+  }
+}
+
+@keyframes shake {
+  0%,100% {transform:translateX(0);}
+  25% {transform:translateX(-5px);}
+  75% {transform:translateX(5px);}
+}
+
+.shake {
+  animation:shake .25s ease;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width:1100px) {
+
+  .app-workspace {
+    grid-template-columns:270px 1fr;
+  }
+
+  .panel-right {
+    display:none;
+  }
+
+  .score-bar {
+    position:static;
+    transform:none;
+  }
+}
+
+@media (max-width:760px) {
+
+  body {
+    overflow:auto;
+  }
+
+  header {
+    height:auto;
+    min-height:70px;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  .logo-area h1 {
+    font-size:1rem;
+  }
+
+  .badge-grade {
+    font-size:.7rem;
+  }
+
+  .score-bar {
+    order:3;
+    width:100%;
+    justify-content:center;
+  }
+
+  .header-actions {
+    margin-left:auto;
+  }
+
+  .task-dropdown {
+    max-width:170px;
+    font-size:.75rem;
+  }
+
+  .header-actions .btn {
+    font-size:0;
+    padding:8px 11px;
+  }
+
+  .header-actions .btn:first-letter {
+    font-size:1rem;
+  }
+
+  .app-workspace {
+    height:auto;
+    min-height:calc(100vh - 130px);
+    display:flex;
+    flex-direction:column;
+  }
+
+  .panel-left {
+    border-right:none;
+    border-bottom:1px solid var(--border);
+    max-height:310px;
+  }
+
+  .block-list {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+
+  .panel-center {
+    min-height:600px;
+  }
+
+  .chart-flow-container {
+    max-width:100%;
+  }
+}
+
+/* iPad landscape */
+@media (min-width:768px) and (max-width:1200px) {
+
+  .app-workspace {
+    grid-template-columns:280px 1fr;
+  }
+
+  .panel-right {
+    display:none;
+  }
+
+  .flow-block-source {
+    min-height:62px;
+  }
+
+  .drop-slot {
+    min-height:72px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+
+<header>
+
+  <div class="logo-area">
+    <div class="logo-icon">💡</div>
+
+    <div>
+      <h1>Flowchart Playground</h1>
+      <span class="badge-grade">
+        วิชาวิทยาการคำนวณ ชั้น ป.3
+      </span>
+    </div>
+  </div>
+
+  <div class="score-bar">
+    <div class="score-item">
+      ⭐ คะแนน <span id="scoreDisplay">0</span>
+    </div>
+
+    <div class="score-item">
+      🎯 <span id="attemptDisplay">0</span> ครั้ง
+    </div>
+  </div>
+
+  <div class="header-actions">
+
+    <select id="taskSelector"
+            class="task-dropdown"
+            onchange="changeTask(this.value)">
+
+      <option value="market">
+        ภารกิจที่ 1: ซื้อของที่สหกรณ์
+      </option>
+
+      <option value="fruit">
+        ภารกิจที่ 2: เลือกซื้อมังคุด
+      </option>
+
+      <option value="cleanRoom">
+        ภารกิจที่ 3: ช่วยคุณแม่ขายอาหาร
+      </option>
+
+      <option value="shoes">
+        ภารกิจที่ 4: ซักรองเท้าผ้าใบ
+      </option>
+
+    </select>
+
+    <button class="btn btn-outline"
+            onclick="resetBoard()">
+      🔄 <span class="reset-text">ล้าง</span>
+    </button>
+
+  </div>
+
+</header>
+
+
+<!-- ================= WORKSPACE ================= -->
+
+<div class="app-workspace">
+
+  <!-- LEFT -->
+
+  <aside class="panel-left">
+
+    <div class="card-info">
+
+      <h3 id="taskTitleDisplay">
+        ภารกิจ
+      </h3>
+
+      <p id="taskDescDisplay"></p>
+
+    </div>
+
+    <div class="section-title">
+      📦 เลือกชิ้นส่วนผังงาน
+    </div>
+
+    <div style="
+      font-size:.76rem;
+      color:#64748b;
+      margin-bottom:10px;
+    ">
+      💡 แตะบล็อกเพื่อวางอัตโนมัติ
+      หรือใช้เมาส์/ปากกาลากไปยังช่อง
+    </div>
+
+    <div class="block-list"
+         id="toolboxContainer">
+    </div>
+
+  </aside>
+
+
+  <!-- CENTER -->
+
+  <main class="panel-center">
+
+    <div class="center-header">
+
+      <div class="center-title">
+        🧩 เรียงลำดับ Flowchart
+      </div>
+
+      <div class="progress-text">
+        <span id="progressDisplay">0</span> /
+        <span id="totalDisplay">5</span>
+      </div>
+
+    </div>
+
+    <div class="chart-flow-container"
+         id="flowSlotsContainer">
+    </div>
+
+  </main>
+
+
+  <!-- RIGHT -->
+
+  <aside class="panel-right">
+
+    <div class="guide-card">
+
+      <h4>📖 ความรู้สัญลักษณ์ผังงาน</h4>
+
+      <div class="guide-item">
+
+        <span class="shape-tag shape-terminal"></span>
+
+        <div>
+          <b>Start / End</b><br>
+          <span style="color:#64748b">
+            จุดเริ่มต้นและจุดสิ้นสุด
+          </span>
+        </div>
+
+      </div>
+
+      <div class="guide-item">
+
+        <span class="shape-tag shape-process"></span>
+
+        <div>
+          <b>Process</b><br>
+          <span style="color:#64748b">
+            ขั้นตอนการทำงาน
+          </span>
+        </div>
+
+      </div>
+
+      <div class="guide-item">
+
+        <span class="shape-tag shape-decision"></span>
+
+        <div>
+          <b>Decision</b><br>
+          <span style="color:#64748b">
+            การตัดสินใจ / เงื่อนไข
+          </span>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="action-card">
+
+      <button class="btn btn-primary"
+              onclick="validateSolution()">
+        ✔️ ตรวจสอบคำตอบ
+      </button>
+
+      <button class="btn btn-outline"
+              onclick="showHint()">
+        💡 ขอคำใบ้
+      </button>
+
+      <button class="btn btn-outline"
+              onclick="resetBoard()">
+        🔄 เริ่มภารกิจใหม่
+      </button>
+
+      <div id="feedbackBox"
+           class="status-box">
+      </div>
+
+    </div>
+
+  </aside>
+
+</div>
+
+
+<!-- ================= SUCCESS MODAL ================= -->
+
+<div id="successModal"
+     class="modal-overlay">
+
+  <div class="modal">
+
+    <div class="modal-icon">🎉</div>
+
+    <h2>ยอดเยี่ยมมาก!</h2>
+
+    <p id="successMessage">
+      นักเรียนเรียงลำดับ Flowchart ได้ถูกต้อง
+    </p>
+
+    <div class="final-score">
+      ⭐ +<span id="earnedScore">10</span> คะแนน
+    </div>
+
+    <button class="btn btn-primary"
+            style="width:100%"
+            onclick="closeSuccessModal()">
+      🚀 ไปต่อ
+    </button>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   DATABASE
+===================================================== */
+
+const tasks = {
+
+  market: {
+
+    title:"ภารกิจที่ 1: การซื้อของที่สหกรณ์โรงเรียน",
+
+    desc:"ให้นักเรียนเรียงลำดับขั้นตอนการเลือกซื้อเครื่องเขียนตามรายการที่กำหนดให้ถูกต้อง",
+
+    stepsCount:5,
+
+    blocks:[
+
+      {
+        id:"m1",
+        text:"เริ่มต้น (Start)",
+        shape:"terminal"
+      },
+
+      {
+        id:"m2",
+        text:"เลือกหยิบสินค้าใส่ตะกร้า",
+        shape:"process"
+      },
+
+      {
+        id:"m3",
+        text:"ตรวจสอบว่าสินค้าครบถ้วนหรือไม่",
+        shape:"decision"
+      },
+
+      {
+        id:"m4",
+        text:"นำสินค้าไปชำระเงินที่จุดจ่ายเงิน",
+        shape:"process"
+      },
+
+      {
+        id:"m5",
+        text:"สิ้นสุด (End)",
+        shape:"terminal"
+      }
+
+    ],
+
+    solution:["m1","m2","m3","m4","m5"]
+
+  },
+
+
+  fruit: {
+
+    title:"ภารกิจที่ 2: การเลือกซื้อมังคุด 1 กิโลกรัม",
+
+    desc:"ให้นักเรียนเรียงขั้นตอนการเลือกซื้อมังคุดตามเงื่อนไขการชั่งน้ำหนัก",
+
+    stepsCount:5,
+
+    blocks:[
+
+      {
+        id:"f1",
+        text:"เริ่มต้น (Start)",
+        shape:"terminal"
+      },
+
+      {
+        id:"f2",
+        text:"หยิบถุงพลาสติกและเลือกมังคุดใส่ถุง",
+        shape:"process"
+      },
+
+      {
+        id:"f3",
+        text:"ชั่งน้ำหนักมังคุดที่เครื่องชั่ง",
+        shape:"process"
+      },
+
+      {
+        id:"f4",
+        text:"ตรวจสอบว่าน้ำหนักเท่ากับ 1 กก. หรือไม่",
+        shape:"decision"
+      },
+
+      {
+        id:"f5",
+        text:"จ่ายเงินและรับถุงมังคุด (สิ้นสุด)",
+        shape:"terminal"
+      }
+
+    ],
+
+    solution:["f1","f2","f3","f4","f5"]
+
+  },
+
+
+  cleanRoom: {
+
+    title:"ภารกิจที่ 3: ช่วยคุณแม่ขายอาหารในวันหยุด",
+
+    desc:"เรียงขั้นตอนการต้อนรับและการรับคำสั่งซื้ออาหารของลูกค้าตามลำดับเหตุการณ์",
+
+    stepsCount:5,
+
+    blocks:[
+
+      {
+        id:"c1",
+        text:"เริ่มต้น (Start)",
+        shape:"terminal"
+      },
+
+      {
+        id:"c2",
+        text:"กล่าวคำทักทายและยกแก้วน้ำมาบริการ",
+        shape:"process"
+      },
+
+      {
+        id:"c3",
+        text:"จดรายการอาหารที่ลูกค้าสั่งส่งให้คุณแม่",
+        shape:"process"
+      },
+
+      {
+        id:"c4",
+        text:"ยกอาหารมาเสิร์ฟและรับชำระเงิน",
+        shape:"process"
+      },
+
+      {
+        id:"c5",
+        text:"สิ้นสุด (End)",
+        shape:"terminal"
+      }
+
+    ],
+
+    solution:["c1","c2","c3","c4","c5"]
+
+  },
+
+
+  shoes: {
+
+    title:"ภารกิจที่ 4: การซักรองเท้าผ้าใบด้วยมือ",
+
+    desc:"เรียงขั้นตอนการทำความสะอาดรองเท้าผ้าใบตามขั้นตอนการแก้ปัญหา",
+
+    stepsCount:5,
+
+    blocks:[
+
+      {
+        id:"s1",
+        text:"เริ่มต้น (Start)",
+        shape:"terminal"
+      },
+
+      {
+        id:"s2",
+        text:"ถอดเชือกรองเท้าและแช่น้ำผสมผงซักฟอก",
+        shape:"process"
+      },
+
+      {
+        id:"s3",
+        text:"ใช้แปรงขัดสิ่งสกปรกออกแล้วล้างน้ำสะอาด",
+        shape:"process"
+      },
+
+      {
+        id:"s4",
+        text:"นำรองเท้าไปตากจนแห้งสนิท",
+        shape:"process"
+      },
+
+      {
+        id:"s5",
+        text:"สิ้นสุด (End)",
+        shape:"terminal"
+      }
+
+    ],
+
+    solution:["s1","s2","s3","s4","s5"]
+
+  }
+
+};
+
+
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+let activeKey = "market";
+
+let boardSlots = {};
+
+let totalScore = 0;
+
+let attempts = 0;
+
+let taskCompleted = false;
+
+
+/* =====================================================
+   INITIALIZE
+===================================================== */
+
+function init() {
+
+  loadTask(activeKey);
+
+  updateScore();
+
+}
+
+
+/* =====================================================
+   CHANGE TASK
+===================================================== */
+
+function changeTask(key) {
+
+  activeKey = key;
+
+  taskCompleted = false;
+
+  resetBoard();
+
+}
+
+
+/* =====================================================
+   RESET
+===================================================== */
+
+function resetBoard() {
+
+  boardSlots = {};
+
+  taskCompleted = false;
+
+  loadTask(activeKey);
+
+}
+
+
+/* =====================================================
+   LOAD TASK
+===================================================== */
+
+function loadTask(key) {
+
+  const task = tasks[key];
+
+  document.getElementById(
+    "taskTitleDisplay"
+  ).textContent = task.title;
+
+  document.getElementById(
+    "taskDescDisplay"
+  ).textContent = task.desc;
+
+  document.getElementById(
+    "totalDisplay"
+  ).textContent = task.stepsCount;
+
+
+  const feedback =
+    document.getElementById("feedbackBox");
+
+  feedback.style.display="none";
+
+
+  /* ---------- TOOLBOX ---------- */
+
+  const toolbox =
+    document.getElementById("toolboxContainer");
+
+  toolbox.innerHTML="";
+
+
+  const shuffled =
+    [...task.blocks].sort(
+      () => Math.random() - .5
+    );
+
+
+  shuffled.forEach(block => {
+
+    const item =
+      document.createElement("div");
+
+    item.className =
+      "flow-block-source";
+
+    item.id =
+      `block-${block.id}`;
+
+    item.innerHTML = `
+
+      <span class="shape-tag shape-${block.shape}">
+      </span>
+
+      <span>${block.text}</span>
+
+    `;
+
+
+    /*
+      คลิก / แตะ
+      สำหรับ iPad
+    */
+
+    item.addEventListener(
+      "click",
+      () => {
+
+        fillNextAvailableSlot(block.id);
+
+      }
+    );
+
+
+    /*
+      Drag & Drop
+      สำหรับเมาส์/Trackpad
+    */
+
+    item.draggable=true;
+
+    item.addEventListener(
+      "dragstart",
+      e => {
+
+        e.dataTransfer.setData(
+          "text/plain",
+          block.id
+        );
+
+      }
+    );
+
+
+    toolbox.appendChild(item);
+
+  });
+
+
+  /* ---------- SLOTS ---------- */
+
+  const container =
+    document.getElementById(
+      "flowSlotsContainer"
+    );
+
+  container.innerHTML="";
+
+
+  for(let i=0;i<task.stepsCount;i++) {
+
+    const slot =
+      document.createElement("div");
+
+    slot.className="drop-slot";
+
+    slot.dataset.index=i;
+
+    slot.innerHTML = `
+
+      <span class="empty-placeholder">
+        ${getSlotInstruction(i)}
+      </span>
+
+    `;
+
+
+    /*
+      Drag over
+    */
+
+    slot.addEventListener(
+      "dragover",
+      e => {
+
+        e.preventDefault();
+
+        slot.classList.add(
+          "drag-over"
+        );
+
+      }
+    );
+
+
+    slot.addEventListener(
+      "dragleave",
+      () => {
+
+        slot.classList.remove(
+          "drag-over"
+        );
+
+      }
+    );
+
+
+    /*
+      Drop
+    */
+
+    slot.addEventListener(
+      "drop",
+      e => {
+
+        e.preventDefault();
+
+        slot.classList.remove(
+          "drag-over"
+        );
+
+        const blockId =
+          e.dataTransfer.getData(
+            "text/plain"
+          );
+
+        assignBlockToSlot(
+          blockId,
+          i
+        );
+
+      }
+    );
+
+
+    /*
+      แตะช่องว่าง
+      แล้วเลือกบล็อก
+    */
+
+    slot.addEventListener(
+      "click",
+      () => {
+
+        if(boardSlots[i]) return;
+
+        highlightSlot(i);
+
+      }
+    );
+
+
+    container.appendChild(slot);
+
+
+    if(i < task.stepsCount-1) {
+
+      const arrow =
+        document.createElement("div");
+
+      arrow.className =
+        "flow-connector-line";
+
+      container.appendChild(arrow);
+
+    }
+
+  }
+
+
+  refreshToolboxState();
+
+  updateProgress();
+
+}
+
+
+/* =====================================================
+   SLOT INSTRUCTION
+===================================================== */
+
+function getSlotInstruction(index) {
+
+  if(index === 0) {
+
+    return "1️⃣ วางจุดเริ่มต้น (Start) ที่นี่";
+
+  }
+
+  if(index === tasks[activeKey].stepsCount-1) {
+
+    return `5️⃣ วางจุดสิ้นสุด (End) ที่นี่`;
+
+  }
+
+  return `วางขั้นตอนที่ ${index+1} ที่นี่`;
+
+}
+
+
+/* =====================================================
+   ASSIGN
+===================================================== */
+
+function assignBlockToSlot(
+  blockId,
+  slotIndex
+) {
+
+  if(!blockId) return;
+
+
+  /*
+    ถ้าบล็อกอยู่ช่องอื่น
+    ให้ย้ายออกก่อน
+  */
+
+  for(const idx in boardSlots) {
+
+    if(
+      boardSlots[idx] === blockId &&
+      Number(idx) !== slotIndex
+    ) {
+
+      delete boardSlots[idx];
+
+      renderSlotContent(
+        idx,
+        null
+      );
+
+    }
+
+  }
+
+
+  /*
+    ถ้ามีบล็อกเดิมอยู่ในช่อง
+    ให้คืนกลับ toolbox
+  */
+
+  boardSlots[slotIndex] =
+    blockId;
+
+
+  renderSlotContent(
+    slotIndex,
+    blockId
+  );
+
+
+  refreshToolboxState();
+
+  updateProgress();
+
+  hideFeedback();
+
+}
+
+
+/* =====================================================
+   CLICK TO FILL
+===================================================== */
+
+function fillNextAvailableSlot(blockId) {
+
+  const task =
+    tasks[activeKey];
+
+
+  /*
+    ถ้ามีอยู่แล้ว
+    ไม่ทำซ้ำ
+  */
+
+  if(
+    Object.values(boardSlots)
+      .includes(blockId)
+  ) {
+
+    return;
+
+  }
+
+
+  for(
+    let i=0;
+    i<task.stepsCount;
+    i++
+  ) {
+
+    if(
+      boardSlots[i] === undefined
+    ) {
+
+      assignBlockToSlot(
+        blockId,
+        i
+      );
+
+      return;
+
+    }
+
+  }
+
+}
+
+
+/* =====================================================
+   REMOVE
+===================================================== */
+
+function removeSlotContent(
+  slotIndex
+) {
+
+  delete boardSlots[
+    slotIndex
+  ];
+
+  renderSlotContent(
+    slotIndex,
+    null
+  );
+
+  refreshToolboxState();
+
+  updateProgress();
+
+  hideFeedback();
+
+}
+
+
+/* =====================================================
+   RENDER SLOT
+===================================================== */
+
+function renderSlotContent(
+  slotIndex,
+  blockId
+) {
+
+  const slot =
+    document.querySelector(
+      `.drop-slot[data-index="${slotIndex}"]`
+    );
+
+
+  if(!slot) return;
+
+
+  if(!blockId) {
+
+    slot.innerHTML = `
+
+      <span class="empty-placeholder">
+        ${getSlotInstruction(
+          Number(slotIndex)
+        )}
+      </span>
+
+    `;
+
+    return;
+
+  }
+
+
+  const block =
+    tasks[activeKey]
+      .blocks
+      .find(
+        b => b.id === blockId
+      );
+
+
+  slot.innerHTML = `
+
+    <div class="placed-block type-${block.shape}">
+
+      <div class="block-text">
+
+        <span class="shape-tag shape-${block.shape}">
+        </span>
+
+        <span>
+          ${block.text}
+        </span>
+
+      </div>
+
+      <button
+        class="btn-remove-slot"
+        title="นำออก"
+        onclick="removeSlotContent(${slotIndex})">
+
+        ✕
+
+      </button>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =====================================================
+   TOOLBOX STATE
+===================================================== */
+
+function refreshToolboxState() {
+
+  const usedIds =
+    Object.values(boardSlots);
+
+
+  document
+    .querySelectorAll(
+      ".flow-block-source"
+    )
+    .forEach(el => {
+
+      const id =
+        el.id.replace(
+          "block-",
+          ""
+        );
+
+
+      if(
+        usedIds.includes(id)
+      ) {
+
+        el.classList.add("used");
+
+      } else {
+
+        el.classList.remove("used");
+
+      }
+
+    });
+
+}
+
+
+/* =====================================================
+   PROGRESS
+===================================================== */
+
+function updateProgress() {
+
+  const count =
+    Object.keys(boardSlots).length;
+
+  document.getElementById(
+    "progressDisplay"
+  ).textContent=count;
+
+}
+
+
+/* =====================================================
+   VALIDATE
+===================================================== */
+
+function validateSolution() {
+
+  const task =
+    tasks[activeKey];
+
+
+  attempts++;
+
+  document.getElementById(
+    "attemptDisplay"
+  ).textContent=attempts;
+
+
+  const filled =
+    Object.keys(boardSlots).length;
+
+
+  if(
+    filled < task.stepsCount
+  ) {
+
+    showFeedback(
+      "warning",
+      `
+      ⚠️ <b>ยังไม่ครบทุกช่อง</b><br>
+      ตอนนี้วางแล้ว ${filled}
+      จาก ${task.stepsCount} ช่อง
+      <br><br>
+      ลองวางให้ครบก่อน แล้วกดตรวจสอบอีกครั้ง
+      `
+    );
+
+    return;
+
+  }
+
+
+  let correct=true;
+
+
+  for(
+    let i=0;
+    i<task.stepsCount;
+    i++
+  ) {
+
+    if(
+      boardSlots[i] !==
+      task.solution[i]
+    ) {
+
+      correct=false;
+
+      break;
+
+    }
+
+  }
+
+
+  if(correct) {
+
+    handleCorrect();
+
+  } else {
+
+    handleIncorrect();
+
+  }
+
+}
+
+
+/* =====================================================
+   CORRECT
+===================================================== */
+
+function handleCorrect() {
+
+  if(taskCompleted) return;
+
+  taskCompleted=true;
+
+
+  /*
+    คะแนน
+    ครั้งแรก = 10
+    ครั้งที่ 2 = 8
+    ครั้งที่ 3 = 6
+    ครั้งต่อไป = 5
+  */
+
+  let earned=5;
+
+  if(attempts === 1) earned=10;
+  else if(attempts === 2) earned=8;
+  else if(attempts === 3) earned=6;
+
+
+  totalScore += earned;
+
+  updateScore();
+
+
+  showFeedback(
+    "success",
+    `
+    🎉 <b>ยอดเยี่ยมมาก!</b><br>
+    นักเรียนเรียงลำดับ Flowchart ได้ถูกต้องทั้งหมด
+    <br><br>
+    ⭐ ได้รับ ${earned} คะแนน
+    `
+  );
+
+
+  document.getElementById(
+    "earnedScore"
+  ).textContent=earned;
+
+
+  document.getElementById(
+    "successMessage"
+  ).textContent =
+    getSuccessMessage();
+
+
+  document.getElementById(
+    "successModal"
+  ).style.display="flex";
+
+
+  playSuccessSound();
+
+}
+
+
+/* =====================================================
+   INCORRECT
+===================================================== */
+
+function handleIncorrect() {
+
+  const container =
+    document.getElementById(
+      "flowSlotsContainer"
+    );
+
+
+  container.classList.remove("shake");
+
+  void container.offsetWidth;
+
+  container.classList.add("shake");
+
+
+  showFeedback(
+    "error",
+    `
+    ❌ <b>ยังไม่ถูกต้องครับ</b><br>
+    ลองคิดใหม่อีกครั้งว่า
+    <ul style="
+      margin:6px 0 0 20px;
+    ">
+      <li>Start อยู่ด้านบนสุดหรือไม่?</li>
+      <li>ขั้นตอนต่าง ๆ เรียงก่อน–หลังถูกต้องหรือไม่?</li>
+      <li>End อยู่ด้านล่างสุดหรือไม่?</li>
+    </ul>
+    <br>
+    💡 ถ้าต้องการความช่วยเหลือ กด “ขอคำใบ้”
+    `
+  );
+
+
+  playErrorSound();
+
+}
+
+
+/* =====================================================
+   HINT
+===================================================== */
+
+function showHint() {
+
+  const task =
+    tasks[activeKey];
+
+
+  /*
+    หาตำแหน่งแรกที่ผิด
+  */
+
+  let wrongIndex=-1;
+
+
+  for(
+    let i=0;
+    i<task.stepsCount;
+    i++
+  ) {
+
+    if(
+      boardSlots[i] !==
+      task.solution[i]
+    ) {
+
+      wrongIndex=i;
+
+      break;
+
+    }
+
+  }
+
+
+  if(wrongIndex === -1) {
+
+    showFeedback(
+      "success",
+      "💡 ตอนนี้ลำดับถูกต้องแล้วครับ!"
+    );
+
+    return;
+
+  }
+
+
+  const correctId =
+    task.solution[wrongIndex];
+
+
+  const block =
+    task.blocks.find(
+      b => b.id === correctId
+    );
+
+
+  showFeedback(
+    "warning",
+    `
+    💡 <b>คำใบ้</b><br>
+    ช่องที่ ${wrongIndex+1}
+    ควรเป็น
+    <br><br>
+    👉 <b>${block.text}</b>
+    `
+  );
+
+
+  /*
+    Highlight ช่องที่ควรแก้
+  */
+
+  const slot =
+    document.querySelector(
+      `.drop-slot[data-index="${wrongIndex}"]`
+    );
+
+
+  if(slot) {
+
+    slot.classList.add("highlight");
+
+    setTimeout(
+      () => {
+        slot.classList.remove(
+          "highlight"
+        );
+      },
+      1800
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   FEEDBACK
+===================================================== */
+
+function showFeedback(
+  type,
+  html
+) {
+
+  const feedback =
+    document.getElementById(
+      "feedbackBox"
+    );
+
+
+  feedback.className =
+    `status-box status-${type}`;
+
+
+  feedback.innerHTML=html;
+
+  feedback.style.display="block";
+
+}
+
+
+function hideFeedback() {
+
+  const feedback =
+    document.getElementById(
+      "feedbackBox"
+    );
+
+  feedback.style.display="none";
+
+}
+
+
+/* =====================================================
+   SCORE
+===================================================== */
+
+function updateScore() {
+
+  document.getElementById(
+    "scoreDisplay"
+  ).textContent=totalScore;
+
+}
+
+
+/* =====================================================
+   SUCCESS MESSAGE
+===================================================== */
+
+function getSuccessMessage() {
+
+  const messages=[
+
+    "นักเรียนสามารถเรียงลำดับขั้นตอนของอัลกอริทึมได้ถูกต้องแล้ว!",
+
+    "เก่งมาก! นักเรียนเข้าใจการทำงานของ Flowchart แล้ว",
+
+    "สุดยอด! พร้อมสำหรับภารกิจต่อไปแล้วครับ"
+
+  ];
+
+
+  return messages[
+    Math.floor(
+      Math.random()*messages.length
+    )
+  ];
+
+}
+
+
+/* =====================================================
+   MODAL
+===================================================== */
+
+function closeSuccessModal() {
+
+  document.getElementById(
+    "successModal"
+  ).style.display="none";
+
+}
+
+
+/* =====================================================
+   HIGHLIGHT SLOT
+===================================================== */
+
+function highlightSlot(index) {
+
+  document
+    .querySelectorAll(
+      ".drop-slot"
+    )
+    .forEach(
+      slot =>
+        slot.classList.remove(
+          "highlight"
+        )
+    );
+
+
+  const slot =
+    document.querySelector(
+      `.drop-slot[data-index="${index}"]`
+    );
+
+
+  if(slot) {
+
+    slot.classList.add(
+      "highlight"
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   SIMPLE SOUND
+   ใช้ Web Audio API
+   ไม่ต้องโหลดไฟล์เสียงภายนอก
+===================================================== */
+
+function playSuccessSound() {
+
+  try {
+
+    const AudioContext =
+      window.AudioContext ||
+      window.webkitAudioContext;
+
+    if(!AudioContext) return;
+
+
+    const ctx =
+      new AudioContext();
+
+
+    const notes=[
+      523.25,
+      659.25,
+      783.99
+    ];
+
+
+    notes.forEach(
+      (frequency,index) => {
+
+        const oscillator =
+          ctx.createOscillator();
+
+        const gain =
+          ctx.createGain();
+
+
+        oscillator.frequency.value =
+          frequency;
+
+        oscillator.type="sine";
+
+
+        gain.gain.setValueAtTime(
+          .001,
+          ctx.currentTime
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+          .15,
+          ctx.currentTime +
+          index*.12 +
+          .03
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+          .001,
+          ctx.currentTime +
+          index*.12 +
+          .25
+        );
+
+
+        oscillator.connect(gain);
+
+        gain.connect(ctx.destination);
+
+
+        oscillator.start(
+          ctx.currentTime +
+          index*.12
+        );
+
+        oscillator.stop(
+          ctx.currentTime +
+          index*.12 +
+          .27
+        );
+
+      }
+    );
+
+  } catch(e) {}
+
+}
+
+
+function playErrorSound() {
+
+  try {
+
+    const AudioContext =
+      window.AudioContext ||
+      window.webkitAudioContext;
+
+    if(!AudioContext) return;
+
+
+    const ctx =
+      new AudioContext();
+
+    const oscillator =
+      ctx.createOscillator();
+
+    const gain =
+      ctx.createGain();
+
+
+    oscillator.type="sine";
+
+    oscillator.frequency.value=220;
+
+    gain.gain.value=.08;
+
+
+    oscillator.connect(gain);
+
+    gain.connect(ctx.destination);
+
+
+    oscillator.start();
+
+    oscillator.stop(
+      ctx.currentTime+.18
+    );
+
+  } catch(e) {}
+
+}
+
+
+/* =====================================================
+   KEYBOARD SUPPORT
+===================================================== */
+
+document.addEventListener(
+  "keydown",
+  e => {
+
+    if(e.key === "Escape") {
+
+      closeSuccessModal();
+
+    }
+
+  }
+);
+
+
+/* =====================================================
+   START
+===================================================== */
+
+window.addEventListener(
+  "load",
+  init
+);
+
+</script>
+
+</body>
+</html>
+```
